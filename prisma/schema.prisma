@@ -1,0 +1,155 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Routine {
+  id        Int     @id @default(autoincrement())
+  name      String
+  start     String  // HH:mm format, e.g. "09:00"
+  end       String  // HH:mm format, e.g. "10:00"
+  strict    Boolean @default(false)
+  notifyBefore String  // comma-separated minutes, e.g. "15,10"
+  notifications Notification[]
+  preferences NotificationPreference[]
+  notificationLogs NotificationLog[] @relation("RoutineNotificationLogs")
+  stats     WeeklyStats[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model DailyLog {
+  id        Int     @id @default(autoincrement())
+  date      String  // YYYY-MM-DD
+  blockId   Int
+  status    String  // "upcoming", "active", "done", "missed"
+  notes     String?
+  comments  Comment[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model QuickAction {
+  id        Int     @id @default(autoincrement())
+  name      String
+  emoji     String?
+  description String?
+  color     String  @default("blue")
+  logs      QuickActionLog[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model QuickActionLog {
+  id        Int     @id @default(autoincrement())
+  actionId  Int
+  action    QuickAction @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  date      String  // YYYY-MM-DD
+  time      String  // HH:mm
+  count     Int     @default(1)
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id        Int     @id @default(autoincrement())
+  routineId Int
+  routine   Routine @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  minutesBefore Int
+  enabled   Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Comment {
+  id        Int     @id @default(autoincrement())
+  logId     Int
+  log       DailyLog @relation(fields: [logId], references: [id], onDelete: Cascade)
+  text      String
+  target    String?
+  aim       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model WeeklyStats {
+  id        Int     @id @default(autoincrement())
+  weekStart String  // YYYY-MM-DD (Monday)
+  routineId Int
+  routine   Routine @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  completed Int     @default(0)
+  missed    Int     @default(0)
+  streakDays Int    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Stores SMTP and SMS provider settings for notifications
+model NotificationConfig {
+  id          Int     @id @default(autoincrement())
+
+  // SMTP
+  smtpHost    String?
+  smtpPort    Int?    @default(587)
+  smtpUsername String?
+  smtpPassword String?
+  smtpFrom    String?
+
+  // SMS
+  smsUrl      String?
+  smsApiKey   String?
+  smsPartnerId String?
+  smsShortcode String?
+  smsPassType String? @default("plain")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Notification templates with variable support
+model NotificationTemplate {
+  id          Int     @id @default(autoincrement())
+  name        String  @unique
+  description String?
+  type        String  // "email" | "sms"
+  subject     String? // For email only
+  body        String  // Template with {{blockName}}, {{startTime}}, {{endTime}}, {{minutesBefore}}
+  isDefault   Boolean @default(false) // One default per type, used as fallback
+  preferences NotificationPreference[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Per-routine notification preferences
+model NotificationPreference {
+  id          Int     @id @default(autoincrement())
+  routineId   Int
+  routine     Routine @relation(fields: [routineId], references: [id], onDelete: Cascade)
+  type        String  // "email" | "sms"
+  recipient   String  // email or phone number
+  templateId  Int
+  template    NotificationTemplate @relation(fields: [templateId], references: [id])
+  enabled     Boolean @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([routineId, type])
+}
+
+model NotificationLog {
+  id          Int     @id @default(autoincrement())
+  routineId   Int
+  routine     Routine @relation("RoutineNotificationLogs", fields: [routineId], references: [id], onDelete: Cascade)
+  type        String  // "email" | "sms"
+  recipient   String
+  subject     String?
+  body        String
+  status      String  // "sent" | "failed"
+  error       String?
+  sentAt      DateTime @default(now())
+}
