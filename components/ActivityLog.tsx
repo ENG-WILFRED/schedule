@@ -16,12 +16,12 @@ interface DailyLogEntry {
 
 interface Props {
   logs: DailyLogEntry[]
-  expandedLog: number | null
-  onExpandLog: (id: number | null) => void
+  expandedLogs: number[]
+  onToggleLog: (id: number) => void
   onAddComment: (logId: number) => (text: string, target?: string, aim?: string) => Promise<void>
 }
 
-export default function ActivityLog({ logs, expandedLog, onExpandLog, onAddComment }: Props) {
+export default function ActivityLog({ logs, expandedLogs, onToggleLog, onAddComment }: Props) {
   const getStatusStyles = (status: string) => {
     const styles: Record<string, any> = {
       done: { card: 'from-emerald-400/20 to-cyan-400/10 border-emerald-400/30', badge: 'bg-emerald-400/20 text-emerald-300', icon: '✓' },
@@ -46,42 +46,86 @@ export default function ActivityLog({ logs, expandedLog, onExpandLog, onAddComme
       {Object.entries(logsByDate).map(([date, dateLogs]) => (
         <div key={date}>
           <h2 className="text-lg font-bold text-white mb-4">{formatDate(date)}</h2>
-          <div className="space-y-3">
-            {dateLogs.map(log => {
-              const styles = getStatusStyles(log.status)
-              const isExpanded = expandedLog === log.id
-              return (
-                <div
-                  key={log.id}
-                  className={`rounded-2xl bg-gradient-to-r ${styles.card} border transition cursor-pointer`}
-                  onClick={() => onExpandLog(isExpanded ? null : log.id)}
-                >
-                  <div className="p-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl">{styles.icon}</span>
-                        <div>
-                          <p className="font-semibold text-white">{log.routineName}</p>
-                          <p className={`text-xs ${styles.badge} px-2 py-1 rounded-full inline-block`}>
-                            {log.status.toUpperCase()}
-                          </p>
+          {
+            // Split dateLogs into two independent columns so one column's
+            // item height changes don't affect the other column.
+          }
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="space-y-3">
+              {dateLogs.filter((_, i) => i % 2 === 0).map(log => {
+                const styles = getStatusStyles(log.status)
+                const isExpanded = expandedLogs.includes(log.id)
+                return (
+                  <div
+                    key={log.id}
+                    className={`rounded-2xl bg-gradient-to-r ${styles.card} border transition cursor-pointer`}
+                    onClick={() => onToggleLog(log.id)}
+                  >
+                    <div className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl">{styles.icon}</span>
+                          <div>
+                            <p className="font-semibold text-white">{log.routineName}</p>
+                            <p className={`text-xs ${styles.badge} px-2 py-1 rounded-full inline-block`}>
+                              {log.status.toUpperCase()}
+                            </p>
+                          </div>
                         </div>
+                        <span className="text-slate-400">{isExpanded ? '▼' : '▶'}</span>
                       </div>
-                      <span className="text-slate-400">{isExpanded ? '▼' : '▶'}</span>
+                      {isExpanded && (
+                        <div className="mt-4 border-t border-white/10 pt-4">
+                          <ActivityComments
+                            logId={log.id}
+                            comments={log.comments}
+                            onAddComment={onAddComment(log.id)}
+                          />
+                        </div>
+                      )}
                     </div>
-                    {isExpanded && (
-                      <div className="mt-4 border-t border-white/10 pt-4">
-                        <ActivityComments
-                          logId={log.id}
-                          comments={log.comments}
-                          onAddComment={onAddComment(log.id)}
-                        />
-                      </div>
-                    )}
                   </div>
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
+
+            <div className="space-y-3">
+              {dateLogs.filter((_, i) => i % 2 === 1).map(log => {
+                const styles = getStatusStyles(log.status)
+                const isExpanded = expandedLogs.includes(log.id)
+                return (
+                  <div
+                    key={log.id}
+                    className={`rounded-2xl bg-gradient-to-r ${styles.card} border transition cursor-pointer`}
+                    onClick={() => onToggleLog(log.id)}
+                  >
+                    <div className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl">{styles.icon}</span>
+                          <div>
+                            <p className="font-semibold text-white">{log.routineName}</p>
+                            <p className={`text-xs ${styles.badge} px-2 py-1 rounded-full inline-block`}>
+                              {log.status.toUpperCase()}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="text-slate-400">{isExpanded ? '▼' : '▶'}</span>
+                      </div>
+                      {isExpanded && (
+                        <div className="mt-4 border-t border-white/10 pt-4">
+                          <ActivityComments
+                            logId={log.id}
+                            comments={log.comments}
+                            onAddComment={onAddComment(log.id)}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           </div>
         </div>
       ))}

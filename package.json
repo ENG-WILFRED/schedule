@@ -8,7 +8,8 @@
         "start": "next start",
         "prisma:generate": "prisma generate",
         "db:push": "prisma db push",
-        "db:seed": "ts-node --transpile-only prisma/seed.ts"
+            "db:seed": "ts-node --transpile-only prisma/seed.ts",
+            "build:seed": "tsc --project tsconfig.json prisma/seed.ts --outDir dist"
     },
     "dependencies": {
         "@prisma/client": "^6.19.1",

@@ -46,16 +46,20 @@ export default function QuickNote({ readOnly, onAdd }: QuickNoteProps) {
         {!readOnly ? (
           <button
             onClick={() => setIsOpen(true)}
-            className="absolute right-0 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-500 to-cyan-500 text-white font-semibold hover:opacity-90 transition-all"
+            aria-label="Add note"
+            title="Add note"
+            className="absolute right-0 w-10 h-10 grid place-items-center rounded-xl bg-gradient-to-r from-violet-500 to-cyan-500 text-white font-semibold hover:opacity-90 transition-all"
           >
-            + Add Note
+            <span className="text-xl">＋</span>
           </button>
         ) : (
           <button
             onClick={() => onAdd && onAdd()}
-            className="absolute right-0 px-4 py-2 rounded-xl bg-gradient-to-r from-violet-500 to-cyan-500 text-white font-semibold hover:opacity-90 transition-all"
+            aria-label="Add note"
+            title="Add note"
+            className="absolute right-0 w-10 h-10 grid place-items-center rounded-xl bg-gradient-to-r from-violet-500 to-cyan-500 text-white font-semibold hover:opacity-90 transition-all"
           >
-            + Add Note
+            <span className="text-xl">＋</span>
           </button>
         )}
       </div>

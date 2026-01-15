@@ -73,6 +73,26 @@ async function main() {
     await prisma.comment.create({ data: { logId: log.id, text: 'Nice progress today!' } })
   }
 
+  // Add additional recent daily logs (today, yesterday, 2 days ago)
+  const extraDates = [
+    new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    today,
+  ]
+
+  const routinesForExtra = await prisma.routine.findMany({ take: 6 })
+  for (const d of extraDates) {
+    for (let i = 0; i < Math.min(3, routinesForExtra.length); i++) {
+      const r = routinesForExtra[i]
+      const status = i % 2 === 0 ? 'done' : 'missed'
+      const notes = `Auto extra log for ${r.name} on ${d}`
+      const log = await prisma.dailyLog.create({ data: { date: d, blockId: r.id, status, notes } })
+      if (Math.random() > 0.5) {
+        await prisma.comment.create({ data: { logId: log.id, text: 'Auto-generated comment' } })
+      }
+    }
+  }
+
   // Weekly stats seed
   await prisma.weeklyStats.deleteMany({})
   for (const r of sampleRoutines) {
