@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react'
 import { getAllRoutines, createRoutine, updateRoutine, deleteRoutine } from '../../actions/routines'
+import { getAllRoutinesWithTemplateData } from '../../actions/routine-template-data'
 import RoutineForm from '../../../components/RoutineForm'
 import RoutinesList from '../../../components/RoutinesList'
 import { showToast } from '../../../components/ToastContainer'
@@ -12,6 +13,7 @@ interface Routine {
   end: string
   strict: boolean
   notifyBefore: string
+  templateData?: any // Include template data
 }
 
 interface FormData {
@@ -39,8 +41,18 @@ export default function RoutineSettingsPage() {
   const loadRoutines = async () => {
     try {
       setLoading(true)
-      const data = await getAllRoutines()
-      setRoutines(data.routines || [])
+      // Fetch with template data for notification variables
+      const routineData = await getAllRoutinesWithTemplateData()
+      const routinesWithData = routineData.map(r => ({
+        id: r.id,
+        name: r.name,
+        start: r.start,
+        end: r.end,
+        strict: r.strict,
+        notifyBefore: r.notifyBefore,
+        templateData: r // Include full template data
+      }))
+      setRoutines(routinesWithData)
     } catch (e) {
       console.error(e)
       showToast('Failed to load routines', 'error')

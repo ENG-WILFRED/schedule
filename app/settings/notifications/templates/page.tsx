@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { getTemplates, seedTemplates, updateTemplate } from '../../../actions/notification/template'
+import { getTemplates, updateTemplate } from '../../../actions/notification/templates'
 import { showToast } from '../../../../components/ToastContainer'
 import TemplateCard from '../../../../components/TemplateCard'
 import TemplateEditor from '../../../../components/TemplateEditor'
@@ -18,7 +18,6 @@ type Template = {
 export default function TemplatesPage() {
   const [templates, setTemplates] = useState<Template[]>([])
   const [loading, setLoading] = useState(true)
-  const [seedLoading, setSeedLoading] = useState(false)
   const [editingTemplateId, setEditingTemplateId] = useState<number | null>(null)
   const [editingTemplateBody, setEditingTemplateBody] = useState('')
   const [editingTemplateSubject, setEditingTemplateSubject] = useState('')
@@ -37,19 +36,6 @@ export default function TemplatesPage() {
       showToast('Failed to load templates', 'error')
     } finally {
       setLoading(false)
-    }
-  }
-
-  async function handleSeedTemplates() {
-    try {
-      setSeedLoading(true)
-      await seedTemplates()
-      showToast('Default templates seeded successfully', 'success')
-      load()
-    } catch (e) {
-      showToast('Failed to seed templates', 'error')
-    } finally {
-      setSeedLoading(false)
     }
   }
 
@@ -82,19 +68,12 @@ export default function TemplatesPage() {
 
         {/* Templates Grid */}
         <div className="rounded-2xl bg-white/5 border border-white/10 p-8 mb-8 w-full">
-          <div className="flex items-center justify-between mb-6">
+          <div className="mb-6">
             <h2 className="text-2xl font-bold text-violet-300">All Templates</h2>
-            <button
-              onClick={handleSeedTemplates}
-              disabled={seedLoading}
-              className="px-4 py-2 rounded-lg bg-violet-600/50 hover:bg-violet-600 text-white font-semibold transition disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              {seedLoading ? '⟳ Seeding...' : 'Seed Default Templates'}
-            </button>
           </div>
 
           {templates.length === 0 ? (
-            <p className="text-center text-slate-400 py-12">No templates yet. Click "Seed Default Templates" to create default templates.</p>
+            <p className="text-center text-slate-400 py-12">No templates found. Run <code className="bg-slate-800 px-2 py-1 rounded">npm run db:seed</code> to create default templates.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {templates.map((t) => (

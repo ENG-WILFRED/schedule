@@ -8,13 +8,14 @@
         "start": "next start",
         "prisma:generate": "prisma generate",
         "db:push": "prisma db push",
-            "db:seed": "ts-node --transpile-only prisma/seed.ts",
-            "build:seed": "tsc --project tsconfig.json prisma/seed.ts --outDir dist"
+        "db:seed": "node scripts/seed-templates.js",
+        "build:seed": "tsc --project tsconfig.json prisma/seed.ts --outDir dist"
     },
     "dependencies": {
         "@prisma/client": "^6.19.1",
         "@tailwindcss/postcss": "^4.1.17",
         "autoprefixer": "^10",
+        "kafkajs": "^2.2.4",
         "next": "15.4.6",
         "nodemailer": "^7.0.12",
         "react": "19.2.0",

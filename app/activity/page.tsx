@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import ActivityLog from '../../components/ActivityLog'
 import QuickNote from '../../components/QuickNote'
+import { getActivityLogs, addComment } from '../actions/activity'
 
 interface DailyLogEntry {
   id: number
@@ -27,9 +28,7 @@ export default function ActivityPage() {
   const loadActivity = async () => {
     try {
       setLoading(true)
-      const res = await fetch('/api/activity')
-      if (!res.ok) throw new Error('Failed to fetch')
-      const data = await res.json()
+      const data = await getActivityLogs()
       setLogs(data.logs || [])
     } catch (e) {
       console.error(e)
@@ -40,13 +39,7 @@ export default function ActivityPage() {
 
   const handleAddComment = (logId: number) => async (text: string, target?: string, aim?: string) => {
     try {
-      const res = await fetch('/api/comment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ logId, text, target, aim })
-      })
-      if (!res.ok) throw new Error('Failed to add comment')
-      const data = await res.json()
+      const data = await addComment(logId, text, target, aim)
       if (data.comment) {
         setLogs(prev => prev.map(log => (log.id === logId ? { ...log, comments: [...log.comments, data.comment] } : log)))
       }

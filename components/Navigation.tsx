@@ -11,7 +11,6 @@ export default function Navigation() {
 
   const navItems = [
     { path: '/', label: '📅 Today', icon: '📅' },
-    { path: '/trends', label: '📊 Trends', icon: '📊' },
     { path: '/activity', label: '📝 Activity', icon: '📝' },
     { path: '/settings/notifications', label: '🔔 Notifications', icon: '🔔' },
     { path: '/settings/routine', label: '⏰ Routines', icon: '⏰' },

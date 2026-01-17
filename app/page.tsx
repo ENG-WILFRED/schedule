@@ -5,6 +5,7 @@ import EnhancedTimeBlock from '../components/EnhancedTimeBlock'
 import QuickNote from '../components/QuickNote'
 import { useRouter } from 'next/navigation'
 import { getAllRoutines } from './actions/routines'
+import { getAllRoutinesWithTemplateData } from './actions/routine-template-data'
 import { showToast } from '../components/ToastContainer'
 
 
@@ -16,6 +17,7 @@ type Block = {
   strict: boolean
   notifyBefore: number[]
   status?: 'upcoming' | 'active' | 'done'
+  templateData?: any // Include template variables from database
 }
 
 export default function Page() {
@@ -28,8 +30,9 @@ export default function Page() {
   useEffect(() => {
     async function load() {
       try {
-        const data = await getAllRoutines()
-        const routinesArray = (data && (data as any).routines) || []
+        // Fetch routines with template data for notifications
+        const templateData = await getAllRoutinesWithTemplateData()
+        const routinesArray = templateData || []
 
         function parseHM(hm: string) {
           const [hh, mm] = hm.split(':').map(Number)
@@ -63,6 +66,7 @@ export default function Page() {
           strict: r.strict,
           notifyBefore: (r.notifyBefore || '').toString().split(',').filter(Boolean).map(Number),
           status: statusForBlock(r as Block, now),
+          templateData: r, // Include full template data for notifications
         }))
 
         setRoutine(mapped)
@@ -194,15 +198,6 @@ export default function Page() {
             <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
               <h3 className="text-white font-bold mb-4">⚡ Quick Links</h3>
               <div className="space-y-2">
-                <button
-                  onClick={() => {
-                    showToast('Navigating to Trends...', 'loading')
-                    router.push('/trends')
-                  }}
-                  className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-emerald-300 font-semibold hover:brightness-110 transition disabled:opacity-50"
-                >
-                  📊 Weekly Trends
-                </button>
                 <button
                   onClick={() => {
                     showToast('Navigating to Activity...', 'loading')

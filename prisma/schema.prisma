@@ -88,7 +88,6 @@ model WeeklyStats {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
 // Stores SMTP and SMS provider settings for notifications
 model NotificationConfig {
   id          Int     @id @default(autoincrement())
@@ -119,6 +118,7 @@ model NotificationTemplate {
   type        String  // "email" | "sms"
   subject     String? // For email only
   body        String  // Template with {{blockName}}, {{startTime}}, {{endTime}}, {{minutesBefore}}
+  keys        String? // JSON array of required keys like ["routineName", "startTime", "endTime", "minutesBefore"]
   isDefault   Boolean @default(false) // One default per type, used as fallback
   preferences NotificationPreference[]
   createdAt   DateTime @default(now())
