@@ -384,84 +384,264 @@ async function seedRoutine() {
   console.log(`✓ Seeded ${defaultRoutine.length} routines with notification preferences`)
 }
 
+async function seedCodingData() {
+  // Clear existing coding data
+  await prisma.codingSession.deleteMany({})
+  await prisma.codingAchievement.deleteMany({})
+  await prisma.codingPlan.deleteMany({})
+  await prisma.codingNote.deleteMany({})
+
+  // Seed coding sessions
+  const sessions = await Promise.all([
+    prisma.codingSession.create({
+      data: {
+        date: '2026-01-20',
+        duration: 120,
+        language: 'TypeScript',
+      },
+    }),
+    prisma.codingSession.create({
+      data: {
+        date: '2026-01-19',
+        duration: 95,
+        language: 'React',
+      },
+    }),
+    prisma.codingSession.create({
+      data: {
+        date: '2026-01-18',
+        duration: 180,
+        language: 'Next.js',
+      },
+    }),
+    prisma.codingSession.create({
+      data: {
+        date: '2026-01-17',
+        duration: 150,
+        language: 'TypeScript',
+      },
+    }),
+    prisma.codingSession.create({
+      data: {
+        date: '2026-01-16',
+        duration: 110,
+        language: 'Database Design',
+      },
+    }),
+  ])
+
+  // Seed achievements
+  const achievements = await Promise.all([
+    prisma.codingAchievement.create({
+      data: {
+        title: '7-Day Streak',
+        description: 'Code for 7 consecutive days',
+        unlockedAt: new Date('2026-01-15'),
+      },
+    }),
+    prisma.codingAchievement.create({
+      data: {
+        title: 'Century Coder',
+        description: 'Complete 100+ hours of coding',
+        unlockedAt: new Date('2026-01-10'),
+      },
+    }),
+    prisma.codingAchievement.create({
+      data: {
+        title: 'Speed Demon',
+        description: 'Code for 3+ hours in a single session',
+        unlockedAt: new Date('2026-01-05'),
+      },
+    }),
+  ])
+
+  // Seed coding plans
+  const plans = await Promise.all([
+    prisma.codingPlan.create({
+      data: {
+        title: 'Build API Gateway',
+        description: 'Create RESTful API with authentication',
+        status: 'active',
+        dueDate: '2026-02-15',
+      },
+    }),
+    prisma.codingPlan.create({
+      data: {
+        title: 'Refactor Database Layer',
+        description: 'Optimize queries and add indexing',
+        status: 'active',
+        dueDate: '2026-02-28',
+      },
+    }),
+    prisma.codingPlan.create({
+      data: {
+        title: 'Add Unit Tests',
+        description: 'Achieve 80% code coverage',
+        status: 'on-hold',
+        dueDate: '2026-03-15',
+      },
+    }),
+  ])
+
+  // Seed notes
+  const notes = await Promise.all([
+    prisma.codingNote.create({
+      data: {
+        title: 'TypeScript Tips',
+        content: 'Generic types can simplify complex type definitions',
+        tags: 'typescript,tips',
+      },
+    }),
+    prisma.codingNote.create({
+      data: {
+        title: 'Performance Optimization',
+        content: 'Consider memoization for expensive computations',
+        tags: 'performance,react',
+      },
+    }),
+  ])
+
+  console.log('✅ Coding data seeded:')
+  console.log(`  • ${sessions.length} coding sessions`)
+  console.log(`  • ${achievements.length} achievements`)
+  console.log(`  • ${plans.length} coding plans`)
+  console.log(`  • ${notes.length} notes`)
+}
+
 async function main() {
   console.log('Starting database seed...')
-  await seedTemplates()
-  await seedRoutine()
-  // Seed quick actions
-  await prisma.quickAction.deleteMany({})
-  const quickActions = [
-    { name: 'Water', emoji: '💧', description: 'Drink a glass of water', color: 'blue' },
-    { name: 'Stretch', emoji: '🧘', description: 'Short stretch break', color: 'purple' },
-    { name: 'Inbox Zero', emoji: '📥', description: 'Quickly triage emails', color: 'green' },
-    { name: 'Deep Focus', emoji: '🎧', description: 'Start a focused session', color: 'pink' },
-    { name: 'Walk', emoji: '🚶', description: 'Take a short walk', color: 'yellow' },
-  ]
-  for (const a of quickActions) {
-    await prisma.quickAction.create({ data: a })
+  
+  // Check if templates already exist
+  const templateCount = await prisma.notificationTemplate.count()
+  if (templateCount === 0) {
+    await seedTemplates()
+  } else {
+    console.log('✓ Templates already exist, skipping template seed')
+  }
+  
+  // Check if routines already exist
+  const routineCount = await prisma.routine.count()
+  if (routineCount === 0) {
+    await seedRoutine()
+  } else {
+    console.log('✓ Routines already exist, skipping routine seed')
+  }
+  
+  // Check if quick actions already exist
+  const quickActionCount = await prisma.quickAction.count()
+  if (quickActionCount === 0) {
+    const quickActions = [
+      { name: 'Water', emoji: '💧', description: 'Drink a glass of water', color: 'blue' },
+      { name: 'Stretch', emoji: '🧘', description: 'Short stretch break', color: 'purple' },
+      { name: 'Inbox Zero', emoji: '📥', description: 'Quickly triage emails', color: 'green' },
+      { name: 'Deep Focus', emoji: '🎧', description: 'Start a focused session', color: 'pink' },
+      { name: 'Walk', emoji: '🚶', description: 'Take a short walk', color: 'yellow' },
+    ]
+    for (const a of quickActions) {
+      await prisma.quickAction.create({ data: a })
+    }
+    console.log('✓ Seeded quick actions')
+  } else {
+    console.log('✓ Quick actions already exist, skipping')
   }
 
-  // Seed notifications (attach to first two routines if present)
-  await prisma.notification.deleteMany({})
-  const routines = await prisma.routine.findMany({ take: 3 })
-  for (const r of routines) {
-    await prisma.notification.create({ data: { routineId: r.id, minutesBefore: 15, enabled: true } })
-    await prisma.notification.create({ data: { routineId: r.id, minutesBefore: 5, enabled: false } })
+  // Check if notifications already exist
+  const notificationCount = await prisma.notification.count()
+  if (notificationCount === 0) {
+    const today = new Date().toISOString().split('T')[0]
+    const routines = await prisma.routine.findMany({ take: 3 })
+    for (const r of routines) {
+      await prisma.notification.create({ data: { routineId: r.id, minutesBefore: 15, enabled: true } })
+      await prisma.notification.create({ data: { routineId: r.id, minutesBefore: 5, enabled: false } })
+    }
+    console.log('✓ Seeded notifications')
+  } else {
+    console.log('✓ Notifications already exist, skipping')
   }
 
-  // Seed quick action logs (today)
-  await prisma.quickActionLog.deleteMany({})
-  const today = new Date().toISOString().split('T')[0]
-  const actions = await prisma.quickAction.findMany()
-  if (actions.length > 0) {
-    await prisma.quickActionLog.create({ data: { actionId: actions[0].id, date: today, time: '09:05', count: 1 } })
-    if (actions[1]) await prisma.quickActionLog.create({ data: { actionId: actions[1].id, date: today, time: '09:20', count: 2 } })
+  // Check if quick action logs already exist
+  const quickActionLogCount = await prisma.quickActionLog.count()
+  if (quickActionLogCount === 0) {
+    const today = new Date().toISOString().split('T')[0]
+    const actions = await prisma.quickAction.findMany()
+    if (actions.length > 0) {
+      await prisma.quickActionLog.create({ data: { actionId: actions[0].id, date: today, time: '09:05', count: 1 } })
+      if (actions[1]) await prisma.quickActionLog.create({ data: { actionId: actions[1].id, date: today, time: '09:20', count: 2 } })
+    }
+    console.log('✓ Seeded quick action logs')
+  } else {
+    console.log('✓ Quick action logs already exist, skipping')
   }
 
-  // Seed a few daily logs and comments
-  await prisma.dailyLog.deleteMany({})
-  await prisma.comment.deleteMany({})
-  const sampleRoutines = await prisma.routine.findMany({ take: 4 })
-  for (const r of sampleRoutines) {
-    const date = today
-    const log = await prisma.dailyLog.create({ data: { date, blockId: r.id, status: 'done', notes: `Auto-seeded log for ${r.name}` } })
-    await prisma.comment.create({ data: { logId: log.id, text: 'Nice progress today!' } })
-  }
+  // Check if daily logs already exist
+  const dailyLogCount = await prisma.dailyLog.count()
+  if (dailyLogCount === 0) {
+    const today = new Date().toISOString().split('T')[0]
+    const sampleRoutines = await prisma.routine.findMany({ take: 4 })
+    for (const r of sampleRoutines) {
+      const log = await prisma.dailyLog.create({ data: { date: today, blockId: r.id, status: 'done', notes: `Auto-seeded log for ${r.name}` } })
+      await prisma.comment.create({ data: { logId: log.id, text: 'Nice progress today!' } })
+    }
+    
+    const extraDates = [
+      new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      today,
+    ]
 
-  // Add additional recent daily logs (today, yesterday, 2 days ago)
-  const extraDates = [
-    new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    today,
-  ]
-
-  const routinesForExtra = await prisma.routine.findMany({ take: 6 })
-  for (const d of extraDates) {
-    for (let i = 0; i < Math.min(3, routinesForExtra.length); i++) {
-      const r = routinesForExtra[i]
-      const status = i % 2 === 0 ? 'done' : 'missed'
-      const notes = `Auto extra log for ${r.name} on ${d}`
-      const log = await prisma.dailyLog.create({ data: { date: d, blockId: r.id, status, notes } })
-      if (Math.random() > 0.5) {
-        await prisma.comment.create({ data: { logId: log.id, text: 'Auto-generated comment' } })
+    const routinesForExtra = await prisma.routine.findMany({ take: 6 })
+    for (const d of extraDates) {
+      for (let i = 0; i < Math.min(3, routinesForExtra.length); i++) {
+        const r = routinesForExtra[i]
+        const status = i % 2 === 0 ? 'done' : 'missed'
+        const notes = `Auto extra log for ${r.name} on ${d}`
+        const log = await prisma.dailyLog.create({ data: { date: d, blockId: r.id, status, notes } })
+        if (Math.random() > 0.5) {
+          await prisma.comment.create({ data: { logId: log.id, text: 'Auto-generated comment' } })
+        }
       }
     }
+    console.log('✓ Seeded daily logs')
+  } else {
+    console.log('✓ Daily logs already exist, skipping')
   }
 
-  // Weekly stats seed
-  await prisma.weeklyStats.deleteMany({})
-  for (const r of sampleRoutines) {
-    await prisma.weeklyStats.create({ data: { weekStart: today, routineId: r.id, completed: 3, missed: 1, streakDays: 2 } })
+  // Check if weekly stats already exist
+  const weeklyStatsCount = await prisma.weeklyStats.count()
+  if (weeklyStatsCount === 0) {
+    const today = new Date().toISOString().split('T')[0]
+    const sampleRoutines = await prisma.routine.findMany({ take: 4 })
+    for (const r of sampleRoutines) {
+      await prisma.weeklyStats.create({ data: { weekStart: today, routineId: r.id, completed: 3, missed: 1, streakDays: 2 } })
+    }
+    console.log('✓ Seeded weekly stats')
+  } else {
+    console.log('✓ Weekly stats already exist, skipping')
   }
 
-  // Seed quick notes (stored in localStorage client-side, but we document the structure here)
-  const sampleQuickNotes = [
-    { text: 'Focus on deep work during evening block', createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString() },
-    { text: 'Remember to hydrate between routine blocks', createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString() },
-    { text: 'Morning workout went great today!', createdAt: new Date().toISOString() },
-  ]
-  console.log('Sample Quick Notes (stored in browser localStorage):')
-  sampleQuickNotes.forEach(note => console.log(`  • ${note.text} (${new Date(note.createdAt).toLocaleString()})`))
+  // Seed coding data
+  const codingSessionCount = await prisma.codingSession.count()
+  if (codingSessionCount === 0) {
+    await seedCodingData()
+  } else {
+    console.log('✓ Coding data already exists, skipping')
+  }
+
+  // Seed quick notes
+  const quickNoteCount = await prisma.quickNote.count()
+  if (quickNoteCount === 0) {
+    const sampleQuickNotes = [
+      { text: 'Focus on deep work during evening block', createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) },
+      { text: 'Remember to hydrate between routine blocks', createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) },
+      { text: 'Morning workout went great today!', createdAt: new Date() },
+    ]
+    for (const note of sampleQuickNotes) {
+      await prisma.quickNote.create({ data: note })
+    }
+    console.log(`✓ Seeded ${sampleQuickNotes.length} quick notes`)
+  } else {
+    console.log('✓ Quick notes already exist, skipping')
+  }
 
   console.log('Database seed completed!')
 }

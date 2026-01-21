@@ -1,35 +1,67 @@
 "use client"
 import React, { useEffect, useState } from 'react'
+import { getQuickNotes, createQuickNote, deleteQuickNote } from '../app/actions/quick-notes'
+import { showToast } from './ToastContainer'
 
 type QuickNoteProps = {
   readOnly?: boolean
   onAdd?: () => void
 }
 
+type QuickNoteEntry = {
+  id: number
+  text: string
+  createdAt: Date | string
+}
+
 export default function QuickNote({ readOnly, onAdd }: QuickNoteProps) {
   const [text, setText] = useState('')
   const [saved, setSaved] = useState(false)
-  const [entries, setEntries] = useState<Array<{ text: string; createdAt: string }>>([])
+  const [entries, setEntries] = useState<QuickNoteEntry[]>([])
   const [isOpen, setIsOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem('quicknotes')
-      if (raw) setEntries(JSON.parse(raw))
-    } catch (e) {
-      console.error('Failed to load quicknotes', e)
-    }
+    loadNotes()
   }, [])
 
-  function save() {
+  async function loadNotes() {
+    try {
+      setLoading(true)
+      const { notes } = await getQuickNotes()
+      setEntries(notes)
+    } catch (e) {
+      console.error('Failed to load quick notes', e)
+      showToast('Failed to load notes', 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  async function save() {
     if (!text.trim()) return
-    const entry = { text: text.trim(), createdAt: new Date().toISOString() }
-    const updated = [entry, ...entries]
-    setEntries(updated)
-    localStorage.setItem('quicknotes', JSON.stringify(updated))
-    setText('')
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
+    try {
+      const { note } = await createQuickNote(text.trim())
+      setEntries([note as QuickNoteEntry, ...entries])
+      setText('')
+      setSaved(true)
+      setTimeout(() => setSaved(false), 2000)
+      showToast('Note saved', 'success')
+    } catch (e) {
+      console.error(e)
+      showToast('Failed to save note', 'error')
+    }
+  }
+
+  async function handleDelete(id: number) {
+    try {
+      await deleteQuickNote(id)
+      setEntries(entries.filter(e => e.id !== id))
+      showToast('Note deleted', 'success')
+    } catch (e) {
+      console.error(e)
+      showToast('Failed to delete note', 'error')
+    }
   }
 
   const handleClose = () => {
@@ -68,10 +100,23 @@ export default function QuickNote({ readOnly, onAdd }: QuickNoteProps) {
         <div className="space-y-3">
           <p className="text-xs text-slate-300 font-semibold">Saved Notes</p>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-            {entries.map((e, i) => (
-              <div key={i} className="p-3 rounded-xl bg-white/5 shadow-sm border border-white/10 backdrop-blur-sm hover:bg-white/8 transition-colors">
-                <p className="text-sm text-white font-medium leading-relaxed">{e.text}</p>
-                <p className="text-xs text-slate-400 mt-2">{new Date(e.createdAt).toLocaleString()}</p>
+            {entries.map((e) => (
+              <div key={e.id} className="p-3 rounded-xl bg-white/5 shadow-sm border border-white/10 backdrop-blur-sm hover:bg-white/8 transition-colors group">
+                <div className="flex items-start justify-between gap-2">
+                  <p className="text-sm text-white font-medium leading-relaxed flex-1">{e.text}</p>
+                  {!readOnly && (
+                    <button
+                      onClick={() => handleDelete(e.id)}
+                      className="text-xs text-slate-400 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                      title="Delete note"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+                <p className="text-xs text-slate-400 mt-2">
+                  {new Date(e.createdAt).toLocaleString()}
+                </p>
               </div>
             ))}
           </div>

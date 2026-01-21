@@ -2,14 +2,16 @@
     "name": "anchor-routine",
     "version": "0.1.0",
     "private": true,
+    "prisma": {
+        "seed": "tsx prisma/seed.ts"
+    },
     "scripts": {
         "dev": "next dev",
         "build": "next build",
         "start": "next start",
         "prisma:generate": "prisma generate",
         "db:push": "prisma db push",
-        "db:seed": "node scripts/seed-templates.js",
-        "build:seed": "tsc --project tsconfig.json prisma/seed.ts --outDir dist"
+        "db:seed": "prisma db seed"
     },
     "dependencies": {
         "@prisma/client": "^6.19.1",
@@ -32,6 +34,7 @@
         "postcss": "^8.5.6",
         "prisma": "^6.13.0",
         "ts-node": "^10.9.2",
+        "tsx": "^4.21.0",
         "typescript": "^5"
     }
 }
