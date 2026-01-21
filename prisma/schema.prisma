@@ -177,6 +177,8 @@ model CodingPlan {
   title       String
   description String
   status      String  // "active" | "completed" | "on-hold"
+  startTime   String  // HH:mm format
+  endTime     String  // HH:mm format
   dueDate     String  // YYYY-MM-DD
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

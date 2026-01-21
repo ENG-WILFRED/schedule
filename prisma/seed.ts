@@ -462,6 +462,8 @@ async function seedCodingData() {
         title: 'Build API Gateway',
         description: 'Create RESTful API with authentication',
         status: 'active',
+        startTime: '09:00',
+        endTime: '12:00',
         dueDate: '2026-02-15',
       },
     }),
@@ -470,6 +472,8 @@ async function seedCodingData() {
         title: 'Refactor Database Layer',
         description: 'Optimize queries and add indexing',
         status: 'active',
+        startTime: '14:00',
+        endTime: '17:00',
         dueDate: '2026-02-28',
       },
     }),
@@ -478,6 +482,8 @@ async function seedCodingData() {
         title: 'Add Unit Tests',
         description: 'Achieve 80% code coverage',
         status: 'on-hold',
+        startTime: '10:00',
+        endTime: '13:00',
         dueDate: '2026-03-15',
       },
     }),
@@ -497,6 +503,27 @@ async function seedCodingData() {
         title: 'Performance Optimization',
         content: 'Consider memoization for expensive computations',
         tags: 'performance,react',
+      },
+    }),
+    prisma.codingNote.create({
+      data: {
+        title: 'React Hooks Best Practices',
+        content: 'Always call hooks at the top level of your component. Never call them conditionally.',
+        tags: 'react,hooks,javascript',
+      },
+    }),
+    prisma.codingNote.create({
+      data: {
+        title: 'Database Indexing',
+        content: 'Index frequently queried columns to improve query performance',
+        tags: 'database,sql,optimization',
+      },
+    }),
+    prisma.codingNote.create({
+      data: {
+        title: 'API Design Patterns',
+        content: 'Use RESTful conventions: GET for retrieval, POST for creation, PUT for updates, DELETE for removal',
+        tags: 'api,rest,design',
       },
     }),
   ])
@@ -620,8 +647,8 @@ async function main() {
   }
 
   // Seed coding data
-  const codingSessionCount = await prisma.codingSession.count()
-  if (codingSessionCount === 0) {
+  const codingPlanCount = await prisma.codingPlan.count()
+  if (codingPlanCount === 0) {
     await seedCodingData()
   } else {
     console.log('✓ Coding data already exists, skipping')

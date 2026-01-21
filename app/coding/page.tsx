@@ -1,20 +1,22 @@
 "use client"
 
 import React, { useEffect, useState } from 'react'
-import Navigation from '../../components/Navigation'
 import CodingTimes from '../../components/CodingTimes'
 import Achievements from '../../components/Achievements'
-import CodingPlans from '../../components/CodingPlans'
 import Notes from '../../components/Notes'
 import { getCodingPlans, createCodingPlan, updateCodingPlan, deleteCodingPlan } from '../actions/coding-plans'
-import { getCodingSessions } from '../actions/coding-sessions'
+import { getAchievements } from '../actions/achievements'
+import { getCodingNotes } from '../actions/coding-notes'
 import { showToast } from '../../components/ToastContainer'
 
-type CodingSession = {
+type CodingPlan = {
   id: number
-  date: string
-  duration: number // in minutes
-  language: string
+  title: string
+  description: string
+  status: 'active' | 'completed' | 'on-hold'
+  startTime: string
+  endTime: string
+  dueDate: string
 }
 
 type Achievement = {
@@ -22,14 +24,6 @@ type Achievement = {
   title: string
   description: string
   unlockedAt: string
-}
-
-type CodingPlan = {
-  id: number
-  title: string
-  description: string
-  status: 'active' | 'completed' | 'on-hold'
-  dueDate: string
 }
 
 type Note = {
@@ -41,79 +35,19 @@ type Note = {
 }
 
 export default function CodingDashboard() {
-  const [sessions, setSessions] = useState<CodingSession[]>([])
-  const [sessionsLoading, setSessionsLoading] = useState(true)
-  
-  const [achievements, setAchievements] = useState<Achievement[]>([
-    {
-      id: 1,
-      title: '7-Day Streak',
-      description: 'Code for 7 consecutive days',
-      unlockedAt: '2026-01-15',
-    },
-    {
-      id: 2,
-      title: 'Century Coder',
-      description: 'Complete 100+ hours of coding',
-      unlockedAt: '2026-01-10',
-    },
-    {
-      id: 3,
-      title: 'Speed Demon',
-      description: 'Code for 3+ hours in a single session',
-      unlockedAt: '2026-01-05',
-    },
-  ])
-
   const [plans, setPlans] = useState<CodingPlan[]>([])
-  const [plansLoading, setPlansLoading] = useState(true)
-  const [editingPlanId, setEditingPlanId] = useState<number | null>(null)
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    status: 'active' as 'active' | 'completed' | 'on-hold',
-    dueDate: '',
-  })
+  const [achievements, setAchievements] = useState<Achievement[]>([])
+  const [notes, setNotes] = useState<Note[]>([])
 
-  const [notes, setNotes] = useState<Note[]>([
-    {
-      id: 1,
-      title: 'TypeScript Tips',
-      content: 'Generic types can simplify complex type definitions',
-      createdAt: '2026-01-18',
-      tags: ['typescript', 'tips'],
-    },
-    {
-      id: 2,
-      title: 'Performance Optimization',
-      content: 'Consider memoization for expensive computations',
-      createdAt: '2026-01-17',
-      tags: ['performance', 'react'],
-    },
-  ])
-
-  // Load sessions and plans from database on mount
+  // Load data from database on mount
   useEffect(() => {
-    loadSessions()
     loadPlans()
+    loadAchievements()
+    loadNotes()
   }, [])
-
-  async function loadSessions() {
-    try {
-      setSessionsLoading(true)
-      const { sessions: dbSessions } = await getCodingSessions()
-      setSessions(dbSessions)
-    } catch (e) {
-      console.error(e)
-      showToast('Failed to load sessions', 'error')
-    } finally {
-      setSessionsLoading(false)
-    }
-  }
 
   async function loadPlans() {
     try {
-      setPlansLoading(true)
       const { plans: dbPlans } = await getCodingPlans()
       const typedPlans = dbPlans.map(p => ({
         ...p,
@@ -123,54 +57,67 @@ export default function CodingDashboard() {
     } catch (e) {
       console.error(e)
       showToast('Failed to load plans', 'error')
-    } finally {
-      setPlansLoading(false)
     }
   }
 
-  const handleAddPlan = async () => {
-    if (!formData.title.trim() || !formData.description.trim() || !formData.dueDate) {
-      showToast('Please fill all fields', 'error')
-      return
-    }
-
+  async function loadAchievements() {
     try {
-      if (editingPlanId !== null) {
-        // Update existing plan
-        const { plan } = await updateCodingPlan(editingPlanId, formData)
-        setPlans(plans.map(p => p.id === editingPlanId ? (plan as CodingPlan) : p))
-        setEditingPlanId(null)
-        showToast('Plan updated', 'success')
-      } else {
-        // Create new plan
-        const { plan } = await createCodingPlan(formData)
-        setPlans([plan as CodingPlan, ...plans])
-        showToast('Plan created', 'success')
-      }
-      resetForm()
+      const { achievements: dbAchievements } = await getAchievements()
+      setAchievements(dbAchievements)
     } catch (e) {
       console.error(e)
-      showToast('Failed to save plan', 'error')
+      showToast('Failed to load achievements', 'error')
     }
   }
 
-  const handleEditPlan = (plan: CodingPlan) => {
-    setEditingPlanId(plan.id)
-    setFormData({
-      title: plan.title,
-      description: plan.description,
-      status: plan.status,
-      dueDate: plan.dueDate,
-    })
+  async function loadNotes() {
+    try {
+      const { notes: dbNotes } = await getCodingNotes()
+      setNotes(dbNotes)
+    } catch (e) {
+      console.error(e)
+      showToast('Failed to load notes', 'error')
+    }
+  }
+
+  const handleAddPlan = async (data: {
+    title: string
+    description: string
+    status: 'active' | 'completed' | 'on-hold'
+    startTime: string
+    endTime: string
+    dueDate: string
+  }) => {
+    try {
+      const { plan } = await createCodingPlan(data)
+      setPlans([plan as CodingPlan, ...plans])
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
+  }
+
+  const handleEditPlan = async (planId: number, data: {
+    title: string
+    description: string
+    status: 'active' | 'completed' | 'on-hold'
+    startTime: string
+    endTime: string
+    dueDate: string
+  }) => {
+    try {
+      const { plan } = await updateCodingPlan(planId, data)
+      setPlans(plans.map(p => p.id === planId ? (plan as CodingPlan) : p))
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
   }
 
   const handleDeletePlan = async (id: number) => {
     try {
       await deleteCodingPlan(id)
       setPlans(plans.filter(p => p.id !== id))
-      if (editingPlanId === id) {
-        resetForm()
-      }
       showToast('Plan deleted', 'success')
     } catch (e) {
       console.error(e)
@@ -178,33 +125,18 @@ export default function CodingDashboard() {
     }
   }
 
-  const resetForm = () => {
-    setFormData({
-      title: '',
-      description: '',
-      status: 'active',
-      dueDate: '',
-    })
-    setEditingPlanId(null)
-  }
-
   return (
     <div className="min-h-screen bg-base-dark text-text-primary">
-      <Navigation />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <CodingTimes sessions={sessions} />
-        <Achievements achievements={achievements} />
-        <CodingPlans
+      <main className="w-full">
+        <CodingTimes 
           plans={plans}
-          formData={formData}
-          editingPlanId={editingPlanId}
           onAddPlan={handleAddPlan}
-          onEditPlan={handleEditPlan}
+          onEditPlan={(plan) => {
+            // This would be used to pre-fill the form
+          }}
           onDeletePlan={handleDeletePlan}
-          onFormChange={(field, value) => setFormData({ ...formData, [field]: value })}
-          onResetForm={resetForm}
         />
+        <Achievements achievements={achievements} />
         <Notes notes={notes} />
       </main>
     </div>

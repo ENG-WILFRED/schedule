@@ -19,26 +19,28 @@ export default function Achievements({ achievements }: { achievements: Achieveme
             key={achievement.id}
             className="
               relative overflow-hidden rounded-2xl p-6
-              bg-gradient-to-br from-vivid-magenta/10 via-slate-900/60 to-slate-800/40
-              border border-vivid-magenta/30
-              hover:border-vivid-magenta/50 hover:shadow-xl hover:shadow-vivid-magenta/10
+              bg-gradient-to-br from-vivid-magenta/15 via-slate-900/60 to-slate-800/40
+              border-2 border-vivid-magenta/40
+              hover:border-vivid-magenta/70 hover:shadow-2xl hover:shadow-vivid-magenta/20
               transition-all duration-300
+              group
             "
           >
             <div className="relative">
               <div className="mb-4">
                 <span className="
-                  text-4xl font-bold bg-gradient-to-r from-vivid-magenta via-cyan-400 to-neon-green 
+                  text-5xl font-bold bg-gradient-to-r from-vivid-magenta via-cyan-400 to-neon-green 
                   bg-clip-text text-transparent
+                  group-hover:scale-110 transition-transform duration-300 inline-block
                 ">
                   🏆
                 </span>
               </div>
-              <h3 className="font-bold text-white mb-2">{achievement.title}</h3>
-              <p className="text-sm text-slate-400 mb-3">
+              <h3 className="font-bold text-white mb-2 text-lg">{achievement.title}</h3>
+              <p className="text-sm text-slate-400 mb-4">
                 {achievement.description}
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 font-semibold">
                 Unlocked {achievement.unlockedAt}
               </p>
             </div>

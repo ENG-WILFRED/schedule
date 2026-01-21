@@ -18,6 +18,8 @@ export async function createCodingPlan(data: {
   title: string
   description: string
   status: 'active' | 'completed' | 'on-hold'
+  startTime: string
+  endTime: string
   dueDate: string
 }) {
   try {
@@ -37,6 +39,8 @@ export async function updateCodingPlan(
     title: string
     description: string
     status: 'active' | 'completed' | 'on-hold'
+    startTime: string
+    endTime: string
     dueDate: string
   }
 ) {
