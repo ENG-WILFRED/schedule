@@ -33,10 +33,10 @@ const getStatusBgColor = (status: string) => {
 
 const getPlanGradient = (index: number) => {
   const gradients = [
-    'from-cyan-500/10 via-slate-900/60 to-slate-800/40 border-cyan-500/30 hover:shadow-cyan-500/10',
-    'from-vivid-magenta/10 via-slate-900/60 to-slate-800/40 border-vivid-magenta/30 hover:shadow-vivid-magenta/10',
-    'from-neon-green/10 via-slate-900/60 to-slate-800/40 border-neon-green/30 hover:shadow-neon-green/10',
-    'from-amber-warning/10 via-slate-900/60 to-slate-800/40 border-amber-warning/30 hover:shadow-amber-warning/10',
+    'from-cyan-500/10 via-slate-900/60 to-slate-800/40 border-cyan-500/40 hover:shadow-cyan-500/20',
+    'from-vivid-magenta/10 via-slate-900/60 to-slate-800/40 border-vivid-magenta/40 hover:shadow-vivid-magenta/20',
+    'from-neon-green/10 via-slate-900/60 to-slate-800/40 border-neon-green/40 hover:shadow-neon-green/20',
+    'from-amber-warning/10 via-slate-900/60 to-slate-800/40 border-amber-warning/40 hover:shadow-amber-warning/20',
   ]
   return gradients[index % gradients.length]
 }
@@ -108,7 +108,7 @@ export default function CodingPlans({
           <div className="
             col-span-full relative overflow-hidden rounded-2xl p-8 text-center
             bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-slate-800/40
-            border border-white/10
+            border-2 border-neon-green/40
           ">
             <p className="text-slate-400">No coding plans yet. Create your first one!</p>
           </div>
@@ -119,8 +119,8 @@ export default function CodingPlans({
               className={`
                 relative overflow-hidden rounded-2xl p-6
                 bg-gradient-to-br ${getPlanGradient(index)}
-                border border-white/10
-                hover:border-white/20 hover:shadow-xl
+                border-2
+                hover:border-opacity-100 hover:shadow-2xl
                 transition-all duration-300
               `}
             >
@@ -177,7 +177,7 @@ export default function CodingPlans({
           <div className="
             relative overflow-hidden rounded-2xl p-8
             bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-800/85
-            border border-white/10
+            border-2 border-cyan-500/40
             max-w-2xl w-full shadow-2xl
           ">
             <h3 className="text-xl font-bold text-white mb-6">
@@ -196,9 +196,9 @@ export default function CodingPlans({
                   placeholder="e.g., Build API Gateway"
                   className="
                     w-full px-4 py-2 rounded-lg
-                    bg-slate-800/50 border border-white/10
+                    bg-slate-800/50 border-2 border-cyan-500/30
                     text-white placeholder-slate-500
-                    focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20
+                    focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20
                     transition-all
                   "
                 />
@@ -215,9 +215,9 @@ export default function CodingPlans({
                   rows={3}
                   className="
                     w-full px-4 py-2 rounded-lg
-                    bg-slate-800/50 border border-white/10
+                    bg-slate-800/50 border-2 border-cyan-500/30
                     text-white placeholder-slate-500
-                    focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20
+                    focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20
                     transition-all resize-none
                   "
                 />
@@ -233,9 +233,9 @@ export default function CodingPlans({
                     onChange={(e) => onFormChange('status', e.target.value)}
                     className="
                       w-full px-4 py-2 rounded-lg
-                      bg-slate-800/50 border border-white/10
+                      bg-slate-800/50 border-2 border-cyan-500/30
                       text-white
-                      focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20
+                      focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20
                       transition-all
                     "
                   >
@@ -255,9 +255,9 @@ export default function CodingPlans({
                     onChange={(e) => onFormChange('dueDate', e.target.value)}
                     className="
                       w-full px-4 py-2 rounded-lg
-                      bg-slate-800/50 border border-white/10
+                      bg-slate-800/50 border-2 border-cyan-500/30
                       text-white
-                      focus:outline-none focus:border-cyan-500/50 focus:ring-2 focus:ring-cyan-500/20
+                      focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20
                       transition-all
                     "
                   />

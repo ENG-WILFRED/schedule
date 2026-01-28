@@ -38,22 +38,22 @@ const getStatusBgColor = (status: string) => {
 const calculateDuration = (startTime: string, endTime: string): number => {
   const [startHours, startMins] = startTime.split(':').map(Number)
   const [endHours, endMins] = endTime.split(':').map(Number)
-  
+
   const startTotalMins = startHours * 60 + startMins
   const endTotalMins = endHours * 60 + endMins
-  
+
   let diff = endTotalMins - startTotalMins
   if (diff < 0) diff += 24 * 60
-  
+
   return diff
 }
 
 const getPlanGradient = (index: number) => {
   const gradients = [
-    'from-cyan-500/10 via-slate-900/60 to-slate-800/40 border-cyan-500/30 hover:shadow-cyan-500/20',
-    'from-vivid-magenta/10 via-slate-900/60 to-slate-800/40 border-vivid-magenta/30 hover:shadow-vivid-magenta/20',
-    'from-neon-green/10 via-slate-900/60 to-slate-800/40 border-neon-green/30 hover:shadow-neon-green/20',
-    'from-amber-warning/10 via-slate-900/60 to-slate-800/40 border-amber-warning/30 hover:shadow-amber-warning/20',
+    'from-cyan-500/10 via-slate-900/60 to-slate-800/40 border-cyan-500/40 hover:shadow-cyan-500/20',
+    'from-vivid-magenta/10 via-slate-900/60 to-slate-800/40 border-vivid-magenta/40 hover:shadow-vivid-magenta/20',
+    'from-neon-green/10 via-slate-900/60 to-slate-800/40 border-neon-green/40 hover:shadow-neon-green/20',
+    'from-amber-warning/10 via-slate-900/60 to-slate-800/40 border-amber-warning/40 hover:shadow-amber-warning/20',
   ]
   return gradients[index % gradients.length]
 }
@@ -140,10 +140,10 @@ export default function CodingTimes({
         </div>
 
         <div className="
-          relative overflow-hidden rounded-2xl p-6
-          bg-gradient-to-br from-neon-green/10 via-slate-900/60 to-slate-800/40
-          border-2 border-neon-green/40
-          hover:border-neon-green/60 hover:shadow-xl hover:shadow-neon-green/20
+        relative overflow-hidden rounded-2xl p-6
+          bg-gradient-to-br from-cyan-500/10 via-slate-900/60 to-slate-800/40
+          border-2 border-cyan-500/40
+          hover:border-cyan-500/60 hover:shadow-xl hover:shadow-cyan-500/20
           transition-all duration-300
         ">
           <div className="relative">
@@ -153,10 +153,10 @@ export default function CodingTimes({
         </div>
 
         <div className="
-          relative overflow-hidden rounded-2xl p-6
-          bg-gradient-to-br from-vivid-magenta/10 via-slate-900/60 to-slate-800/40
-          border-2 border-vivid-magenta/40
-          hover:border-vivid-magenta/60 hover:shadow-xl hover:shadow-vivid-magenta/20
+        relative overflow-hidden rounded-2xl p-6
+          bg-gradient-to-br from-cyan-500/10 via-slate-900/60 to-slate-800/40
+          border-2 border-cyan-500/40
+          hover:border-cyan-500/60 hover:shadow-xl hover:shadow-cyan-500/20
           transition-all duration-300
         ">
           <div className="relative">
@@ -207,7 +207,7 @@ export default function CodingTimes({
             const duration = calculateDuration(plan.startTime, plan.endTime)
             const hours = Math.floor(duration / 60)
             const mins = duration % 60
-            
+
             return (
               <div
                 key={plan.id}
@@ -215,7 +215,7 @@ export default function CodingTimes({
                   relative overflow-hidden rounded-2xl p-6
                   bg-gradient-to-br ${getPlanGradient(index)}
                   border-2
-                  hover:shadow-2xl
+                  hover:border-opacity-100 hover:shadow-2xl
                   transition-all duration-300
                   group
                 `}
@@ -234,7 +234,7 @@ export default function CodingTimes({
                       </span>
                     </div>
                     <p className="text-sm text-slate-400 mb-4">{plan.description}</p>
-                    
+
                     <div className="grid grid-cols-3 gap-3 mb-4">
                       <div>
                         <p className="text-xs text-slate-500 uppercase tracking-wider">Start</p>
@@ -249,10 +249,10 @@ export default function CodingTimes({
                         <p className="text-lg font-bold text-cyan-300">{hours}h {mins}m</p>
                       </div>
                     </div>
-                    
+
                     <p className="text-xs text-slate-500">Due: {plan.dueDate}</p>
                   </div>
-                  
+
                   <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => handleEdit(plan)}

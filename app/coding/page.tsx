@@ -49,9 +49,15 @@ export default function CodingDashboard() {
   async function loadPlans() {
     try {
       const { plans: dbPlans } = await getCodingPlans()
-      const typedPlans = dbPlans.map(p => ({
-        ...p,
-        status: p.status as 'active' | 'completed' | 'on-hold'
+      const typedPlans: CodingPlan[] = dbPlans.map((p: any) => ({
+        id: p.id,
+        title: p.title,
+        description: p.description,
+        status: p.status as 'active' | 'completed' | 'on-hold',
+        // ensure UI-friendly strings for times (provide safe defaults)
+        startTime: p.startTime ?? '09:00',
+        endTime: p.endTime ?? '12:00',
+        dueDate: p.dueDate,
       }))
       setPlans(typedPlans)
     } catch (e) {
@@ -90,7 +96,16 @@ export default function CodingDashboard() {
   }) => {
     try {
       const { plan } = await createCodingPlan(data)
-      setPlans([plan as CodingPlan, ...plans])
+      const newPlan: CodingPlan = {
+        id: (plan as any).id,
+        title: (plan as any).title,
+        description: (plan as any).description,
+        status: (plan as any).status as 'active' | 'completed' | 'on-hold',
+        startTime: (plan as any).startTime ?? data.startTime ?? '09:00',
+        endTime: (plan as any).endTime ?? data.endTime ?? '12:00',
+        dueDate: (plan as any).dueDate,
+      }
+      setPlans([newPlan, ...plans])
     } catch (e) {
       console.error(e)
       throw e
@@ -107,7 +122,16 @@ export default function CodingDashboard() {
   }) => {
     try {
       const { plan } = await updateCodingPlan(planId, data)
-      setPlans(plans.map(p => p.id === planId ? (plan as CodingPlan) : p))
+      const updatedPlan: CodingPlan = {
+        id: (plan as any).id,
+        title: (plan as any).title,
+        description: (plan as any).description,
+        status: (plan as any).status as 'active' | 'completed' | 'on-hold',
+        startTime: (plan as any).startTime ?? data.startTime ?? '09:00',
+        endTime: (plan as any).endTime ?? data.endTime ?? '12:00',
+        dueDate: (plan as any).dueDate,
+      }
+      setPlans(plans.map(p => p.id === planId ? updatedPlan : p))
     } catch (e) {
       console.error(e)
       throw e
