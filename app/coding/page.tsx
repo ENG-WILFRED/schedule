@@ -151,18 +151,86 @@ export default function CodingDashboard() {
 
   return (
     <div className="min-h-screen bg-base-dark text-text-primary">
-      <main className="w-full">
-        <CodingTimes 
-          plans={plans}
-          onAddPlan={handleAddPlan}
-          onEditPlan={(plan) => {
-            // This would be used to pre-fill the form
-          }}
-          onDeletePlan={handleDeletePlan}
-        />
-        <Achievements achievements={achievements} />
-        <Notes notes={notes} />
+      {/* Decorative header gradient background */}
+      <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-br from-cyan-500/5 via-vivid-magenta/5 to-transparent pointer-events-none" />
+      
+      <main className="w-full relative z-10">
+        {/* Header Section */}
+        <div className="px-6 md:px-12 py-12 md:py-16 border-b border-slate-800/40">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-3 h-3 rounded-full bg-gradient-to-r from-cyan-500 to-vivid-magenta animate-pulse" />
+              <p className="text-sm font-semibold text-cyan-400 tracking-wider uppercase">Coding Dashboard</p>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-3 bg-gradient-to-r from-cyan-400 via-vivid-magenta to-neon-green bg-clip-text text-transparent">
+              Level Up Your Skills
+            </h1>
+            <p className="text-slate-400 text-lg md:text-xl max-w-2xl">
+              Track your coding plans, celebrate achievements, and document your learning journey
+            </p>
+          </div>
+        </div>
+
+        {/* Main Content Wrapper */}
+        <div className="px-6 md:px-12 py-12 md:py-16">
+          <div className="max-w-7xl mx-auto space-y-16">
+            {/* Coding Times Section */}
+            <section className="relative">
+              <div className="absolute -inset-6 bg-gradient-to-r from-cyan-500/10 to-vivid-magenta/10 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
+              <div className="relative">
+                <CodingTimes 
+                  plans={plans}
+                  onAddPlan={handleAddPlan}
+                  onEditPlan={(plan) => {
+                    // This would be used to pre-fill the form
+                  }}
+                  onDeletePlan={handleDeletePlan}
+                />
+              </div>
+            </section>
+
+            {/* Divider */}
+            <div className="h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
+
+            {/* Achievements Section */}
+            <section className="relative group">
+              <div className="absolute -inset-6 bg-gradient-to-r from-vivid-magenta/10 to-neon-green/10 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
+              <div className="relative space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-vivid-magenta/20 to-purple-600/20 border border-vivid-magenta/30">
+                    <span className="text-xl">🏆</span>
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-white">Your Achievements</h2>
+                </div>
+                <Achievements achievements={achievements} />
+              </div>
+            </section>
+
+            {/* Divider */}
+            <div className="h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
+
+            {/* Notes Section */}
+            <section className="relative group">
+              <div className="absolute -inset-6 bg-gradient-to-r from-amber-warning/10 to-orange-600/10 rounded-3xl blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10" />
+              <div className="relative space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-amber-warning/20 to-orange-600/20 border border-amber-warning/30">
+                    <span className="text-xl">📝</span>
+                  </div>
+                  <h2 className="text-2xl md:text-3xl font-bold text-white">Coding Notes</h2>
+                </div>
+                <Notes notes={notes} />
+              </div>
+            </section>
+
+            {/* Footer spacer */}
+            <div className="h-12" />
+          </div>
+        </div>
       </main>
+
+      {/* Decorative footer gradient */}
+      <div className="fixed bottom-0 left-0 w-full h-96 bg-gradient-to-t from-cyan-500/5 via-transparent to-transparent pointer-events-none -z-10" />
     </div>
   )
 }

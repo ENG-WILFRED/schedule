@@ -3,9 +3,11 @@ import React, { useEffect, useState } from 'react'
 import TodayHeader from '../components/TodayHeader'
 import EnhancedTimeBlock from '../components/EnhancedTimeBlock'
 import QuickNote from '../components/QuickNote'
+import QuickActionsList from '../components/QuickActionsList'
 import { useRouter } from 'next/navigation'
 import { getAllRoutines } from './actions/routines'
 import { getAllRoutinesWithTemplateData } from './actions/routine-template-data'
+import { getQuickActions, getQuickActionLogs, createQuickActionLog } from './actions/quickactions'
 import { showToast } from '../components/ToastContainer'
 
 
@@ -20,12 +22,28 @@ type Block = {
   templateData?: any // Include template variables from database
 }
 
+type QuickAction = {
+  id: number
+  name: string
+  emoji: string | null
+  description: string | null
+  color: string
+}
+
+type ActionLog = {
+  actionId: number
+  count: number
+}
+
 export default function Page() {
   const router = useRouter()
   const [routine, setRoutine] = useState<Block[]>([])
   const [upcoming, setUpcoming] = useState<Block[]>([])
   const [current, setCurrent] = useState<Block | null>(null)
   const [loading, setLoading] = useState(true)
+  const [actions, setActions] = useState<QuickAction[]>([])
+  const [logs, setLogs] = useState<ActionLog[]>([])
+  const [actionsLoading, setActionsLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
@@ -81,11 +99,49 @@ export default function Page() {
     load()
   }, [])
 
+  useEffect(() => {
+    async function loadActions() {
+      try {
+        setActionsLoading(true)
+        const today = new Date().toISOString().split('T')[0]
+        const [actionsData, logsData] = await Promise.all([
+          getQuickActions(),
+          getQuickActionLogs(today)
+        ])
+        setActions(actionsData.actions || [])
+        setLogs(logsData.logs || [])
+      } catch (e) {
+        console.error('Failed to load quick actions', e)
+        showToast('Failed to load quick actions', 'error')
+      } finally {
+        setActionsLoading(false)
+      }
+    }
+    loadActions()
+  }, [])
+
   const dateLabel = new Date().toLocaleDateString(undefined, {
     weekday: 'short',
     month: 'short',
     day: 'numeric'
   })
+
+  const handleExecuteAction = async (actionId: number) => {
+    try {
+      const now = new Date()
+      const time = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+      const date = now.toISOString().split('T')[0]
+      await createQuickActionLog({ actionId, date, time, count: 1 })
+      setLogs(prev => {
+        const existing = prev.find(l => l.actionId === actionId)
+        return existing ? prev.map(l => l.actionId === actionId ? { ...l, count: l.count + 1 } : l) : [...prev, { actionId, count: 1 }]
+      })
+      showToast('Action logged', 'success')
+    } catch (e) {
+      console.error(e)
+      showToast('Failed to execute action', 'error')
+    }
+  }
 
   return (
     <div className="min-h-screen w-full bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.25),transparent_45%),radial-gradient(circle_at_bottom,_rgba(236,72,153,0.25),transparent_45%)] bg-gradient-to-br from-indigo-950 via-slate-900 to-black">
@@ -194,19 +250,22 @@ export default function Page() {
               </div>
             </div>
 
+            {/* Quick Actions */}
+            <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
+              <h3 className="text-white font-bold mb-4">⚡ Quick Actions</h3>
+              {actionsLoading ? (
+                <div className="text-center py-4 text-slate-400 text-sm">Loading actions...</div>
+              ) : actions.length === 0 ? (
+                <p className="text-slate-300 text-sm">No quick actions available</p>
+              ) : (
+                <QuickActionsList actions={actions} logs={logs} onExecute={handleExecuteAction} />
+              )}
+            </div>
+
             {/* Quick Links */}
             <div className="rounded-2xl bg-white/5 border border-white/10 p-5">
               <h3 className="text-white font-bold mb-4">⚡ Quick Links</h3>
               <div className="space-y-2">
-                <button
-                  onClick={() => {
-                    showToast('Navigating to Activity...', 'loading')
-                    router.push('/activity')
-                  }}
-                  className="w-full px-4 py-3 rounded-xl bg-gradient-to-r from-fuchsia-500/20 to-violet-500/20 text-fuchsia-300 font-semibold hover:brightness-110 transition disabled:opacity-50"
-                >
-                  📝 Activity Log
-                </button>
                 <button
                   onClick={() => {
                     showToast('Navigating to Notifications...', 'loading')

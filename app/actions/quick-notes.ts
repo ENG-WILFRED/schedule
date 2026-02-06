@@ -7,7 +7,28 @@ export async function getQuickNotes() {
     const notes = await prisma.quickNote.findMany({
       orderBy: { createdAt: 'desc' }
     })
-    return { notes }
+    
+    // Filter out notes older than 24 hours
+    const now = new Date()
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+    
+    const validNotes = notes.filter(note => {
+      const noteDate = new Date(note.createdAt)
+      return noteDate > twentyFourHoursAgo
+    })
+    
+    // Delete expired notes from database
+    const expiredIds = notes
+      .filter(note => new Date(note.createdAt) <= twentyFourHoursAgo)
+      .map(note => note.id)
+    
+    if (expiredIds.length > 0) {
+      await prisma.quickNote.deleteMany({
+        where: { id: { in: expiredIds } }
+      })
+    }
+    
+    return { notes: validNotes }
   } catch (error) {
     console.error(error)
     throw new Error('Failed to fetch quick notes')

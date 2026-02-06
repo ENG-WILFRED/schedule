@@ -20,8 +20,7 @@ export default function Achievements({ achievements }: { achievements: Achieveme
             className="
               relative overflow-hidden rounded-2xl p-6
               bg-gradient-to-br from-vivid-magenta/15 via-slate-900/60 to-slate-800/40
-              border-2 border-vivid-magenta/40
-              hover:border-vivid-magenta/70 hover:shadow-2xl hover:shadow-vivid-magenta/20
+              hover:shadow-2xl hover:shadow-vivid-magenta/20
               transition-all duration-300
               group
             "

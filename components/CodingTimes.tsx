@@ -129,8 +129,7 @@ export default function CodingTimes({
         <div className="
           relative overflow-hidden rounded-2xl p-6
           bg-gradient-to-br from-cyan-500/10 via-slate-900/60 to-slate-800/40
-          border-2 border-cyan-500/40
-          hover:border-cyan-500/60 hover:shadow-xl hover:shadow-cyan-500/20
+          hover:shadow-xl hover:shadow-cyan-500/20
           transition-all duration-300
         ">
           <div className="relative">
@@ -142,8 +141,7 @@ export default function CodingTimes({
         <div className="
         relative overflow-hidden rounded-2xl p-6
           bg-gradient-to-br from-cyan-500/10 via-slate-900/60 to-slate-800/40
-          border-2 border-cyan-500/40
-          hover:border-cyan-500/60 hover:shadow-xl hover:shadow-cyan-500/20
+          hover:shadow-xl hover:shadow-cyan-500/20
           transition-all duration-300
         ">
           <div className="relative">
@@ -155,8 +153,7 @@ export default function CodingTimes({
         <div className="
         relative overflow-hidden rounded-2xl p-6
           bg-gradient-to-br from-cyan-500/10 via-slate-900/60 to-slate-800/40
-          border-2 border-cyan-500/40
-          hover:border-cyan-500/60 hover:shadow-xl hover:shadow-cyan-500/20
+          hover:shadow-xl hover:shadow-cyan-500/20
           transition-all duration-300
         ">
           <div className="relative">
@@ -214,8 +211,7 @@ export default function CodingTimes({
                 className={`
                   relative overflow-hidden rounded-2xl p-6
                   bg-gradient-to-br ${getPlanGradient(index)}
-                  border-2
-                  hover:border-opacity-100 hover:shadow-2xl
+                  hover:shadow-2xl
                   transition-all duration-300
                   group
                 `}
@@ -288,7 +284,6 @@ export default function CodingTimes({
           <div className="
             relative overflow-hidden rounded-2xl p-8
             bg-gradient-to-br from-slate-900/98 via-slate-900/95 to-slate-800/90
-            border-2 border-cyan-500/30
             max-w-2xl w-full shadow-2xl
           ">
             <h3 className="text-2xl font-bold text-white mb-6">
@@ -307,9 +302,9 @@ export default function CodingTimes({
                   placeholder="e.g., Build API Gateway"
                   className="
                     w-full px-4 py-3 rounded-lg
-                    bg-slate-800/70 border-2 border-cyan-500/20
-                    text-white placeholder-slate-500
-                    focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20
+                      bg-slate-800/70
+                      text-white placeholder-slate-500
+                      focus:outline-none focus:ring-2 focus:ring-cyan-500/20
                     transition-all
                   "
                 />
@@ -326,9 +321,9 @@ export default function CodingTimes({
                   rows={3}
                   className="
                     w-full px-4 py-3 rounded-lg
-                    bg-slate-800/70 border-2 border-cyan-500/20
-                    text-white placeholder-slate-500
-                    focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20
+                      bg-slate-800/70
+                      text-white placeholder-slate-500
+                      focus:outline-none focus:ring-2 focus:ring-cyan-500/20
                     transition-all resize-none
                   "
                 />
@@ -345,9 +340,9 @@ export default function CodingTimes({
                     onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
                     className="
                       w-full px-3 py-2 rounded-lg
-                      bg-slate-800/70 border-2 border-cyan-500/20
+                      bg-slate-800/70
                       text-white
-                      focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20
+                      focus:outline-none focus:ring-2 focus:ring-cyan-500/20
                       transition-all
                     "
                   />
@@ -363,9 +358,9 @@ export default function CodingTimes({
                     onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
                     className="
                       w-full px-3 py-2 rounded-lg
-                      bg-slate-800/70 border-2 border-cyan-500/20
+                      bg-slate-800/70
                       text-white
-                      focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20
+                      focus:outline-none focus:ring-2 focus:ring-cyan-500/20
                       transition-all
                     "
                   />
@@ -380,9 +375,9 @@ export default function CodingTimes({
                     onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
                     className="
                       w-full px-3 py-2 rounded-lg
-                      bg-slate-800/70 border-2 border-cyan-500/20
+                      bg-slate-800/70
                       text-white
-                      focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20
+                      focus:outline-none focus:ring-2 focus:ring-cyan-500/20
                       transition-all
                     "
                   >
@@ -402,9 +397,9 @@ export default function CodingTimes({
                     onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
                     className="
                       w-full px-3 py-2 rounded-lg
-                      bg-slate-800/70 border-2 border-cyan-500/20
+                      bg-slate-800/70
                       text-white
-                      focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/20
+                      focus:outline-none focus:ring-2 focus:ring-cyan-500/20
                       transition-all
                     "
                   />
@@ -427,7 +422,7 @@ export default function CodingTimes({
                   onClick={() => setIsModalOpen(false)}
                   className="
                     px-6 py-3 rounded-lg font-semibold
-                    bg-slate-700 text-slate-300 border-2 border-slate-600
+                    bg-slate-700 text-slate-300
                     hover:bg-slate-600 transition-all
                   "
                 >

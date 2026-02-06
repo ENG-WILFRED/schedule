@@ -69,6 +69,21 @@ export default function QuickNote({ readOnly, onAdd }: QuickNoteProps) {
     setText('')
   }
 
+  const getTimeUntilExpiry = (createdAt: Date | string) => {
+    const created = new Date(createdAt)
+    const expiresAt = new Date(created.getTime() + 24 * 60 * 60 * 1000)
+    const now = new Date()
+    const diff = expiresAt.getTime() - now.getTime()
+    
+    if (diff <= 0) return 'Expired'
+    
+    const hours = Math.floor(diff / (60 * 60 * 1000))
+    const minutes = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000))
+    
+    if (hours > 0) return `${hours}h ${minutes}m left`
+    return `${minutes}m left`
+  }
+
   return (
     <div className="rounded-2xl p-6 bg-gradient-to-br from-violet-500/20 to-cyan-500/10 border border-violet-500/30 backdrop-blur-xl">
       <div className="flex items-center justify-center mb-6 relative">
@@ -98,7 +113,7 @@ export default function QuickNote({ readOnly, onAdd }: QuickNoteProps) {
 
       {entries.length > 0 && (
         <div className="space-y-3">
-          <p className="text-xs text-slate-300 font-semibold">Saved Notes</p>
+          <p className="text-xs text-slate-300 font-semibold">Saved Notes (Expire in 24h)</p>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
             {entries.map((e) => (
               <div key={e.id} className="p-3 rounded-xl bg-white/5 shadow-sm border border-white/10 backdrop-blur-sm hover:bg-white/8 transition-colors group">
@@ -114,9 +129,14 @@ export default function QuickNote({ readOnly, onAdd }: QuickNoteProps) {
                     </button>
                   )}
                 </div>
-                <p className="text-xs text-slate-400 mt-2">
-                  {new Date(e.createdAt).toLocaleString()}
-                </p>
+                <div className="flex items-center justify-between mt-2">
+                  <p className="text-xs text-slate-400">
+                    {new Date(e.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                  <p className="text-xs text-cyan-400 font-semibold">
+                    {getTimeUntilExpiry(e.createdAt)}
+                  </p>
+                </div>
               </div>
             ))}
           </div>

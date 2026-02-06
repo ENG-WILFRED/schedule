@@ -82,9 +82,9 @@ export default function CodingPlans({
   }
 
   return (
-    <section className="mb-12">
+    <section className="mb-12 w-full">
       {/* Header with Add Button */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-6 w-full">
         <h2 className="text-2xl font-bold text-white">Coding Plans</h2>
         <button
           onClick={handleOpenModal}
@@ -103,7 +103,7 @@ export default function CodingPlans({
       </div>
 
       {/* Plans Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 w-full">
         {plans.length === 0 ? (
           <div className="
             col-span-full relative overflow-hidden rounded-2xl p-8 text-center
@@ -113,21 +113,28 @@ export default function CodingPlans({
             <p className="text-slate-400">No coding plans yet. Create your first one!</p>
           </div>
         ) : (
-          plans.map((plan, index) => (
+          plans.map((plan, index) => {
+            const gradientClass = getPlanGradient(index)
+            const borderColor = index === 0 ? 'border-cyan-500/60' : 
+                               index === 1 ? 'border-vivid-magenta/60' :
+                               index === 2 ? 'border-neon-green/60' :
+                               'border-amber-warning/60'
+            
+            return (
             <div
               key={plan.id}
               className={`
-                relative overflow-hidden rounded-2xl p-6
-                bg-gradient-to-br ${getPlanGradient(index)}
-                border-2
+                relative overflow-hidden rounded-2xl p-6 w-full
+                bg-gradient-to-br ${gradientClass}
+                border-2 ${borderColor}
                 hover:border-opacity-100 hover:shadow-2xl
                 transition-all duration-300
               `}
             >
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="font-bold text-white text-lg">{plan.title}</h3>
+              <div className="flex flex-col items-center justify-center gap-4 text-center">
+                <div className="w-full">
+                  <div className="flex flex-col items-center gap-3 mb-2">
+                    <h3 className="font-bold text-white text-2xl">{plan.title}</h3>
                     <span
                       className={`
                         px-3 py-1 text-xs font-semibold rounded-full
@@ -138,16 +145,16 @@ export default function CodingPlans({
                     </span>
                   </div>
                   <p className="text-sm text-slate-400 mb-3">{plan.description}</p>
-                  <p className="text-xs text-slate-500">Due: {plan.dueDate}</p>
+                  <p className="text-xs text-slate-500 mb-4">Due: {plan.dueDate}</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 w-full">
                   <button
                     onClick={() => {
                       onEditPlan(plan)
                       setIsModalOpen(true)
                     }}
                     className="
-                      px-4 py-2 rounded-lg font-semibold text-sm
+                      flex-1 px-4 py-2 rounded-lg font-semibold text-sm
                       bg-cyan-500/20 text-cyan-300 border border-cyan-500/30
                       hover:bg-cyan-500/30 transition-all
                     "
@@ -157,7 +164,7 @@ export default function CodingPlans({
                   <button
                     onClick={() => onDeletePlan(plan.id)}
                     className="
-                      px-4 py-2 rounded-lg font-semibold text-sm
+                      flex-1 px-4 py-2 rounded-lg font-semibold text-sm
                       bg-hot-red/20 text-hot-red border border-hot-red/30
                       hover:bg-hot-red/30 transition-all
                     "
@@ -167,13 +174,14 @@ export default function CodingPlans({
                 </div>
               </div>
             </div>
-          ))
+            )
+          })
         )}
       </div>
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 w-full">
           <div className="
             relative overflow-hidden rounded-2xl p-8
             bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-slate-800/85

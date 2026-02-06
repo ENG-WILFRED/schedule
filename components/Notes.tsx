@@ -21,8 +21,7 @@ export default function Notes({ notes }: { notes: Note[] }) {
             className="
               relative overflow-hidden rounded-2xl p-6
               bg-gradient-to-br from-amber-warning/15 via-slate-900/60 to-slate-800/40
-              border-2 border-amber-warning/40
-              hover:border-amber-warning/70 hover:shadow-2xl hover:shadow-amber-warning/20
+              hover:shadow-2xl hover:shadow-amber-warning/20
               transition-all duration-300
               group
             "
